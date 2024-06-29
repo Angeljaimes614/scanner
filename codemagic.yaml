@@ -2,7 +2,7 @@ workflows:
   main:
     name: Build and Test
     environment:
-      sdk: ">=2.12.0 <3.0.0"
+      flutter: ">=2.12.0 <3.0.0"
     scripts:
       - flutter pub get  # Instala las dependencias del proyecto
       - flutter test     # Ejecuta las pruebas unitarias y de integración
