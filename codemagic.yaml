@@ -1,0 +1,13 @@
+workflows:
+  main:
+    name: Build and Test
+    environment:
+      sdk: ">=2.12.0 <3.0.0"
+    scripts:
+      - flutter pub get  # Instala las dependencias del proyecto
+      - flutter test     # Ejecuta las pruebas unitarias y de integración
+      - flutter build apk --release  # Construye la aplicación Flutter en modo release para Android
+      - flutter build ios --release   # Construye la aplicación Flutter en modo release para iOS
+    artifacts:
+      - build/**/outputs/**/*.apk  # Artefacto: archivo APK generado para Android
+      - build/ios/archive/**/*.ipa  # Artefacto: archivo IPA generado para iOS
