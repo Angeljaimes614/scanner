@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:my_app/main.dart'; // Asegúrate de importar tu archivo main.dart correctamente
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -20,25 +21,3 @@ void main() {
   });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Demo'),
-        ),
-        body: const Center(
-          child: Text('You have pushed the button this many times: 0'), // Asegúrate de que el texto inicial sea "0"
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-      ),
-    );
-  }
-}
