@@ -1,23 +1,100 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_app/main.dart'; // Asegúrate de importar tu archivo main.dart correctamente
+import 'package:image_picker/image_picker.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
+import 'package:your_app/main.dart'; // Reemplaza 'your_app' con el nombre de tu paquete
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget); // Debería encontrar exactamente un widget con texto "0"
-    expect(find.text('1'), findsNothing); // No debería encontrar ningún widget con texto "1"
+    // Verifica que se muestra el mensaje inicial correctamente
+    expect(find.text('Presiona el botón para escanear una imagen'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump(); // Rebuild the widget after the state has changed.
+    // Ejecuta la acción de escanear imagen
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing); // Ahora no debería encontrar ningún widget con texto "0"
-    expect(find.text('1'), findsOneWidget); // Debería encontrar exactamente un widget con texto "1"
+    // Verifica que se muestra la imagen después de escanear
+    expect(find.byType(Image), findsOneWidget);
   });
 }
 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  File? _imageFile;
+
+  final picker = ImagePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Escáner y Compartir PDF'),
+      ),
+      body: Center(
+        child: _imageFile == null
+            ? Text('Presiona el botón para escanear una imagen')
+            : Image.file(_imageFile!),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _scanImage,
+        tooltip: 'Escanear',
+        child: Icon(Icons.camera_alt),
+      ),
+    );
+  }
+
+  Future<void> _scanImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+      _createPDFAndShare();
+    }
+  }
+
+  Future<void> _createPDFAndShare() async {
+    if (_imageFile == null) return;
+
+    final pdf = pw.Document();
+    final image = pw.MemoryImage(File(_imageFile!.path).readAsBytesSync());
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Image(image),
+          );
+        },
+      ),
+    );
+
+    final output = await getTemporaryDirectory();
+    final filePath = '${output.path}/scanned_document.pdf';
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    Share.shareFiles([filePath], text: 'Compartir PDF');
+  }
+}
