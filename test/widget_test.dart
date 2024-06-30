@@ -7,16 +7,16 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('0'), findsOneWidget); // Debería encontrar exactamente un widget con texto "0"
+    expect(find.text('1'), findsNothing); // No debería encontrar ningún widget con texto "1"
 
     // Tap the '+' icon and trigger a frame.
     await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pump(); // Rebuild the widget after the state has changed.
 
     // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('0'), findsNothing); // Ahora no debería encontrar ningún widget con texto "0"
+    expect(find.text('1'), findsOneWidget); // Debería encontrar exactamente un widget con texto "1"
   });
 }
 
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           title: const Text('Flutter Demo'),
         ),
         body: const Center(
-          child: Text('You have pushed the button this many times: 0'),
+          child: Text('You have pushed the button this many times: 0'), // Asegúrate de que el texto inicial sea "0"
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
