@@ -2,7 +2,7 @@ workflows:
   main:
     name: Build and Test
     environment:
-      flutter: ">=2.12.0 <3.0.0"
+      flutter: stable  # Utiliza la versión estable más reciente de Flutter
     scripts:
       - flutter pub get  # Instala las dependencias del proyecto
       - flutter test     # Ejecuta las pruebas unitarias y de integración
